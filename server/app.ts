@@ -1,6 +1,9 @@
 import express, {Errback, Request, Response, NextFunction} from 'express';
 import config from 'config';
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+
+import authRouter from './routes/auth.routes';
+import todoRouter from './routes/todo.routes';
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -10,12 +13,13 @@ const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunct
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({extended: false}))
 app.use(bodyParser());
 app.use(errorHandler);
 
 //Routes
-app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/todo', require('./routes/todo.routes'));
+app.use('/api/auth', authRouter);
+app.use('/api/todo', todoRouter);
 
 const PORT = config.get('port') || 5000;
 
