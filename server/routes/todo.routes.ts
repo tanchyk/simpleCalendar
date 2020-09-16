@@ -1,6 +1,5 @@
 import express, {Request, Response, NextFunction} from 'express';
 import {QueryResult} from "pg";
-
 import {pool} from '../db';
 
 const todoRouter = express.Router();
@@ -8,7 +7,6 @@ const todoRouter = express.Router();
 todoRouter.get('/', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
         const newTodo: QueryResult = await pool.query(`SELECT * FROM todo;`);
-        console.log(newTodo.rows);
         return res.status(200).json(newTodo.rows);
     } catch (e) {
         next(e);
@@ -18,11 +16,12 @@ todoRouter.get('/', async (req: Request, res: Response, next: NextFunction): Pro
 
 todoRouter.post('/', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-        const {description}= req.body;
-        if(description) {
-            await pool.query('INSERT INTO todo (description) VALUES ($1)', [description]);
+        const {description, userId}= req.body;
+        if(description && userId) {
+            await pool.query('INSERT INTO todo (description, user_id) VALUES ($1, $2)', [description, userId]);
             return res.status(200).json({
                 todo: {
+                    user_id: userId,
                     description
                 }
             });
