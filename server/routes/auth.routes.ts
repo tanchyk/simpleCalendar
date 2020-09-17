@@ -7,12 +7,6 @@ import config from 'config';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-interface User {
-    userId: number
-    email: string
-    password: string
-}
-
 const authRouter = express.Router();
 
 authRouter.post('/register',
@@ -32,10 +26,6 @@ authRouter.post('/register',
         }
 
         const {email, password} = req.body;
-        const check: any = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (check.email) {
-            return res.status(400).json({message: 'User already exists'});
-        }
 
         const hashedPassword: string = await bcrypt.hash(password, 4);
 
@@ -65,28 +55,31 @@ authRouter.post('/login',
 
             const {email, password} = req.body;
 
-            const user: any = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+            const user: QueryResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+            console.log(user.rows[0].email);
 
-            if(!user) {
+            if(!user.rows[0].email) {
                 return res.status(400).json({message: 'No such user'});
             }
 
-            const check = await bcrypt.compare(password, user.password);
+            const check = await bcrypt.compare(password, user.rows[0].password);
 
             if(!check) {
                 return res.status(400).json({message: 'Wrong password'});
             }
 
             const token = jwt.sign(
-                {userId: user.id},
+                {userId: user.rows[0].user_id},
                 config.get('jwtSecret'),
                 {expiresIn: '1h'}
             )
 
             return res.status(200).json({
                 token,
-                userId: user.id
+                userId: user.rows[0].user_id
             });
+
+            return res.status(400);
 
         } catch (e) {
             return res.status(500).json({message: 'Try again'})
