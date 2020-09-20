@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const AuthPage: React.FC = () => {
+export const ToDoPage: React.FC = () => {
     return (
         <div className="card">
             <div className="card-content">

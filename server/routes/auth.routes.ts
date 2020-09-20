@@ -1,4 +1,4 @@
-import express, {Request, Response, NextFunction} from 'express';
+import express, {Request, Response} from 'express';
 import {QueryResult} from "pg";
 import {pool} from '../db';
 import {check, validationResult} from 'express-validator';
