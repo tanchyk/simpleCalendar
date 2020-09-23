@@ -1,9 +1,10 @@
-import React from "react";
+import React, {ReactElement} from "react";
 import {Switch, Route, Redirect } from 'react-router-dom';
 import {ToDoPage} from './pages/ToDoPage';
 import {ProfilePage} from "./pages/ProfilePage";
+import {AuthPage} from "./pages/AuthPage";
 
-export const Routes: React.FC = (isAuth: boolean) => {
+export const Routes = (isAuth: boolean): ReactElement => {
     if(isAuth) {
         return (
             <Switch>
@@ -20,7 +21,7 @@ export const Routes: React.FC = (isAuth: boolean) => {
         return  (
             <Switch>
                 <Route path="/">
-
+                    <AuthPage />
                 </Route>
                 <Route path="/register">
 

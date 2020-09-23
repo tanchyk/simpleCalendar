@@ -4,7 +4,7 @@ export const useHttp = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const request = useCallback(async (url: string, method: string = 'GET', body: any = null, headers: any = {}) => {
+    const request = useCallback(async (url: string, method: string = 'GET', body: any = null, headers: any = {}): Promise<Object> => {
         setLoading(true);
         try {
             if(body) {

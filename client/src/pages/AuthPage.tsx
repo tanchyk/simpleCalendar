@@ -1,15 +1,34 @@
 import * as React from 'react';
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {Form} from "../interfaces";
+import {useHttp} from "../hooks/http.hook";
+import {LoginContext} from "../context/LoginContext";
 
 export const AuthPage: React.FC = () => {
     const [form, setForm] = useState<Form>({
         email: '',
         password: ''
     });
+    const {request, error, clearErr} = useHttp();
+    const auth = useContext(LoginContext);
 
-    const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({...form, [event.target.id]: event.target.value})
+    useEffect(() => {
+        console.log(error);
+        clearErr();
+    }, [error, clearErr]);
+
+    const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setForm({...form, [event.target.id]: event.target.value});
+    }
+
+    const loginHandler = async (): Promise<void> => {
+        try {
+            const data: any = request('http://localhost:5000/api/auth/login', 'POST', {...form});
+            if(data.userId && data.token) {
+                auth.login(data.userId, data.token);
+            }
+        } catch (e) {
+        }
     }
 
     return (
