@@ -1,23 +1,20 @@
 import * as React from 'react';
+import {Header} from "../components/Header";
+import {ToDo, PropsToDo} from "../components/ToDo";
+import {ToDoList} from "../components/ToDoList";
+
+const ary: Array<PropsToDo> = [
+    {todo_id: 1,task: 'Do dishes',complete: true},
+    {todo_id: 2,task: 'Do homework',complete: false}
+    ]
 
 export const ToDoPage: React.FC = () => {
     return (
-        <div className="card">
-            <div className="card-content">
-                <p>I am a very simple card. I am good at containing small bits of information. I am convenient because I
-                    require little markup to use effectively.</p>
-            </div>
-            <div className="card-tabs">
-                <ul className="tabs tabs-fixed-width">
-                    <li className="tab"><a href="#test4">Test 1</a></li>
-                    <li className="tab"><a className="active" href="#test5">Test 2</a></li>
-                    <li className="tab"><a href="#test6">Test 3</a></li>
-                </ul>
-            </div>
-            <div className="card-content grey lighten-4">
-                <div id="test4">Test 1</div>
-                <div id="test5">Test 2</div>
-                <div id="test6">Test 3</div>
+        <div>
+            <Header />
+            <div className={'list'}>
+                <h2>Your List</h2>
+                <ToDoList list={ary} />
             </div>
         </div>
     );
