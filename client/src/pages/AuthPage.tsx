@@ -23,10 +23,9 @@ export const AuthPage: React.FC = () => {
 
     const loginHandler = async (): Promise<void> => {
         try {
-            const data: any = request('http://localhost:5000/api/auth/login', 'POST', {...form});
-            if(data.userId && data.token) {
-                auth.login(data.userId, data.token);
-            }
+            const data: any = await request('http://localhost:5000/api/auth/login', 'POST', {...form});
+            auth.login(data.token, data.userId);
+
         } catch (e) {
         }
     }
@@ -68,7 +67,7 @@ export const AuthPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <a className="waves-effect waves-light btn"><i className="material-icons left">assignment_ind</i>Log In</a>
+                    <a className="waves-effect waves-light btn" onClick={loginHandler}><i className="material-icons left">assignment_ind</i>Log In</a>
                     <a className="waves-effect waves-light btn" style={{marginLeft: 20}}><i className="material-icons left">add_circle_outline</i>Sign In</a>
                 </div>
 

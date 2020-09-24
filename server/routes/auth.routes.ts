@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import {QueryResult} from "pg";
 import {pool} from '../db';
 import {check, validationResult} from 'express-validator';
@@ -56,7 +56,6 @@ authRouter.post('/login',
             const {email, password} = req.body;
 
             const user: QueryResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-            console.log(user.rows[0].email);
 
             if(!user.rows[0].email) {
                 return res.status(400).json({message: 'No such user'});
