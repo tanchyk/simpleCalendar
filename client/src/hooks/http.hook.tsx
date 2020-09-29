@@ -19,7 +19,7 @@ export const useHttp = () => {
                 headers
             }).then(response => {
                 if(!response.ok) {
-                    throw new Error(data.message || 'Something wrong');
+                    throw new Error('Something wrong');
                 }
                 return response.json()
             });

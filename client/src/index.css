@@ -53,3 +53,7 @@ code {
 .completed {
   text-decoration: line-through;
 }
+
+.add-item {
+  margin-left: 1rem;
+}

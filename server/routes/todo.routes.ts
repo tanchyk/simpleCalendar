@@ -1,13 +1,40 @@
 import express, {Request, Response, NextFunction} from 'express';
 import {QueryResult} from "pg";
 import {pool} from '../db';
+import config from 'config';
+import jwt from 'jsonwebtoken';
+
+// const middleware = (req: Request, res: Response, next: NextFunction) => {
+//     if (req.method === 'OPTIONS') {
+//         return next();
+//     }
+//
+//     try {
+//         const token = req.headers.authorization!.split(' ')[1] // "Bearer TOKEN"
+//
+//         if (!token) {
+//             return res.status(401).json({ message: 'No authorization' });
+//         }
+//
+//         const decoded = jwt.verify(token, config.get('jwtSecret'));
+//         console.log('f',decoded)
+//         if(!decoded) {
+//             return res.status(401).json({ message: 'No authorization' })
+//         }
+//         next()
+//     } catch (err) {
+//         res.status(401).json({message: 'No authorization'});
+//     }
+// }
 
 const todoRouter = express.Router();
 
-todoRouter.get('/', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+todoRouter.get('/:userId', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
-        const newTodo: QueryResult = await pool.query(`SELECT * FROM todo;`);
-        return res.status(200).json(newTodo.rows);
+        const userId: number = parseInt(req.params.userId);
+        const newTodo: QueryResult = await pool.query(`SELECT * FROM todo WHERE user_id = $1;`, [userId]);
+        console.log(newTodo.rows);
+        return res.status(200).json({newTodo});
     } catch (e) {
         next(e);
         return res.status(500);
@@ -18,7 +45,7 @@ todoRouter.post('/', async (req: Request, res: Response, next: NextFunction): Pr
     try {
         const {description, userId}= req.body;
         if(description && userId) {
-            await pool.query('INSERT INTO todo (description, user_id) VALUES ($1, $2)', [description, userId]);
+            await pool.query('INSERT INTO todo (description, complete, user_id) VALUES ($1, $2, $3)', [description, false, userId]);
             return res.status(200).json({
                 todo: {
                     user_id: userId,
