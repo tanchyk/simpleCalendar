@@ -40,6 +40,10 @@ code {
   margin-right: 1rem;
 }
 
+.delete-icon:hover {
+  cursor: pointer;
+}
+
 .done-icon {
   position: relative;
   margin-right: 1rem;

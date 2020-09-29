@@ -12,24 +12,27 @@ export const ToDoPage: React.FC = () => {
     const userData: any = JSON.parse(localStorage.getItem('userData')!);
     const auth = useContext(LoginContext);
 
+    const deleteHandler = async (todo_id: number) => {
+        await request(`http://localhost:5000/api/todo/${todo_id}`, 'DELETE');
+    }
+
     const getData = useCallback(async () => {
         const data: any = await request(`http://localhost:5000/api/todo/${userData['userId']}`, 'GET', null, {
             authorization: `Bearer ${auth.token}`
         });
-        console.log(data.newTodo.rows);
         setList(data.newTodo.rows);
     }, [request, auth]);
 
     useEffect(()=> {
         getData();
-    }, [getData]);
+    }, [getData, deleteHandler]);
 
     return (
         <div>
             <Header />
             <div className={'list'}>
                 <h2>Your List<i className={'material-icons small add-item teal-text darken-1'}>add_circle</i></h2>
-                <ToDoList list={list} />
+                <ToDoList list={list} deleteHandler={deleteHandler}/>
             </div>
         </div>
     );
