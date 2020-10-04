@@ -29,6 +29,12 @@ code {
   font-weight: 500;
 }
 
+.logout {
+  color: black;
+  font-weight: 500;
+  margin-right: 2rem;
+}
+
 .list {
   width: 60%;
   margin: 0 auto;
@@ -49,6 +55,10 @@ code {
   margin-right: 1rem;
 }
 
+.done-icon:hover {
+  cursor: pointer;
+}
+
 .collection-item {
   font-size: 1.1rem;
   font-weight: 500;
@@ -60,4 +70,17 @@ code {
 
 .add-item {
   margin-left: 1rem;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+}
+
+.plus {
+  margin-right: 2rem;
+}
+
+.input-field {
+  width: 50%;
 }

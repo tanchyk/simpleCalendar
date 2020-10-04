@@ -4,32 +4,35 @@ import {pool} from '../db';
 import config from 'config';
 import jwt from 'jsonwebtoken';
 
-// const middleware = (req: Request, res: Response, next: NextFunction) => {
-//     if (req.method === 'OPTIONS') {
-//         return next();
-//     }
-//
-//     try {
-//         const token = req.headers.authorization!.split(' ')[1] // "Bearer TOKEN"
-//
-//         if (!token) {
-//             return res.status(401).json({ message: 'No authorization' });
-//         }
-//
-//         const decoded = jwt.verify(token, config.get('jwtSecret'));
-//         console.log('f',decoded)
-//         if(!decoded) {
-//             return res.status(401).json({ message: 'No authorization' })
-//         }
-//         next()
-//     } catch (err) {
-//         res.status(401).json({message: 'No authorization'});
-//     }
-// }
+const middleware = (req: Request, res: Response, next: NextFunction) => {
+    if (req.method === 'OPTIONS') {
+        return next();
+    }
+    console.log('Middleware is fired')
+
+    try {
+        const token: Array<string> = req.headers.authorization!.split(' '); // "Bearer TOKEN"
+        console.log(token[1]);
+        console.log(config.get('jwtSecret'))
+
+        if (!token[1]) {
+            return res.status(401).json({ message: 'No authorization' });
+        }
+
+        const decoded = jwt.verify(token[1], config.get('jwtSecret'));
+        console.log('f',decoded)
+        if(!decoded) {
+            return res.status(401).json({ message: 'No authorization' });
+        }
+        next();
+    } catch (err) {
+        res.status(401).json({message: 'No authorization'});
+    }
+}
 
 const todoRouter = express.Router();
 
-todoRouter.get('/:userId', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+todoRouter.get('/:userId', middleware, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
         const userId: number = parseInt(req.params.userId);
         const newTodo: QueryResult = await pool.query(`SELECT * FROM todo WHERE user_id = $1;`, [userId]);
@@ -41,7 +44,7 @@ todoRouter.get('/:userId', async (req: Request, res: Response, next: NextFunctio
     }
 });
 
-todoRouter.post('/', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+todoRouter.post('/',middleware, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
         const {description, userId}= req.body;
         if(description && userId) {
@@ -61,15 +64,15 @@ todoRouter.post('/', async (req: Request, res: Response, next: NextFunction): Pr
     }
 });
 
-todoRouter.put('/:id', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+todoRouter.put('/:id', middleware, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
         const id: number = parseInt(req.params.id);
-        const {description}= req.body;
-        await pool.query('UPDATE todo SET description = $1 WHERE todo_id = $2', [description, id]);
+        const {complete}= req.body;
+        await pool.query('UPDATE todo SET complete = $1 WHERE todo_id = $2', [complete, id]);
         return res.status(200).json({
             todo: {
                 todo_id: id,
-                description
+                complete
             }
         })
     } catch (e) {
@@ -78,7 +81,7 @@ todoRouter.put('/:id', async (req: Request, res: Response, next: NextFunction): 
     }
 });
 
-todoRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+todoRouter.delete('/:id', middleware, async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     try {
         const id: number = parseInt(req.params.id);
         await pool.query('DELETE FROM todo WHERE todo_id = $1', [id]);

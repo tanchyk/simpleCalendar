@@ -13,7 +13,9 @@ export const AuthPage: React.FC = () => {
     const auth = useContext(LoginContext);
 
     useEffect(() => {
-        console.log(error);
+        if(error) {
+            console.log(error);
+        }
         clearErr();
     }, [error, clearErr]);
 
