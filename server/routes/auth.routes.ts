@@ -31,9 +31,9 @@ authRouter.post('/register',
 
         await pool.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, hashedPassword]);
 
-        return res.status(201).json({message: 'User created'});
+        return res.status(201).json({email, password});
     } catch (e) {
-        return res.status(500).json({message: 'Try again'})
+        return res.status(500).json({message: 'Try again maybe user already exists'})
     }
     });
 

@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import {Form} from "../interfaces";
 import {useHttp} from "../hooks/http.hook";
 import {LoginContext} from "../context/LoginContext";
+import {useMessage} from "../hooks/message";
 
 export const AuthPage: React.FC = () => {
     const [form, setForm] = useState<Form>({
@@ -11,13 +12,16 @@ export const AuthPage: React.FC = () => {
     });
     const {request, error, clearErr} = useHttp();
     const auth = useContext(LoginContext);
+    const message = useMessage();
 
     useEffect(() => {
-        if(error) {
-            console.log(error);
-        }
+        message(error);
         clearErr();
     }, [error, clearErr]);
+
+    useEffect(() => {
+        window.M.updateTextFields();
+    }, [])
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setForm({...form, [event.target.id]: event.target.value});
@@ -26,10 +30,17 @@ export const AuthPage: React.FC = () => {
     const loginHandler = async (): Promise<void> => {
         try {
             const data: any = await request('http://localhost:5000/api/auth/login', 'POST', {...form});
-            auth.login(data.token, data.userId);
+            await auth.login(data.token, data.userId);
 
-        } catch (e) {
-        }
+        } catch (e) {}
+    }
+
+    const registerHandler = async (): Promise<void> => {
+        try {
+            const data: any = await request('http://localhost:5000/api/auth/register','POST', {...form});
+            console.log(data);
+            await loginHandler();
+        } catch (e) {}
     }
 
     return (
@@ -70,7 +81,7 @@ export const AuthPage: React.FC = () => {
                     </div>
 
                     <a className="waves-effect waves-light btn" onClick={loginHandler}><i className="material-icons left">assignment_ind</i>Log In</a>
-                    <a className="waves-effect waves-light btn" style={{marginLeft: 20}}><i className="material-icons left">add_circle_outline</i>Sign In</a>
+                    <a className="waves-effect waves-light btn" style={{marginLeft: 20}} onClick={registerHandler}><i className="material-icons left">add_circle_outline</i>Sign In</a>
                 </div>
 
                 <div className="card-reveal">

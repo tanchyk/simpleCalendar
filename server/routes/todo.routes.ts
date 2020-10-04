@@ -8,19 +8,16 @@ const middleware = (req: Request, res: Response, next: NextFunction) => {
     if (req.method === 'OPTIONS') {
         return next();
     }
-    console.log('Middleware is fired')
 
     try {
         const token: Array<string> = req.headers.authorization!.split(' '); // "Bearer TOKEN"
-        console.log(token[1]);
-        console.log(config.get('jwtSecret'))
 
         if (!token[1]) {
             return res.status(401).json({ message: 'No authorization' });
         }
 
         const decoded = jwt.verify(token[1], config.get('jwtSecret'));
-        console.log('f',decoded)
+
         if(!decoded) {
             return res.status(401).json({ message: 'No authorization' });
         }

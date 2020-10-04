@@ -16,14 +16,14 @@ export const ToDoPage: React.FC = () => {
         await request(`http://localhost:5000/api/todo/${todo_id}`, 'DELETE', null,  {
             authorization: `Bearer ${auth.token}`
         });
-        getData();
+        await getData();
     }
 
     const doneHandler = async (todo_id: number, complete: boolean) => {
         await request(`http://localhost:5000/api/todo/${todo_id}`, 'PUT', {complete: complete}, {
             authorization: `Bearer ${auth.token}`
         });
-        getData();
+        await getData();
     }
 
     const addHandler = async (userId: number | null, description: string) => {
@@ -33,7 +33,7 @@ export const ToDoPage: React.FC = () => {
         }, {
             authorization: `Bearer ${auth.token}`
         });
-        getData();
+        await getData();
     }
 
     const getData = useCallback(async () => {
@@ -42,7 +42,7 @@ export const ToDoPage: React.FC = () => {
         });
         setList(data.newTodo.rows);
 
-    }, [auth, request]);
+    }, [auth]);
 
     useEffect(()=> {
         getData();

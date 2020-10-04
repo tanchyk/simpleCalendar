@@ -4,6 +4,7 @@ import {LoginContext} from "./context/LoginContext";
 import {useLogin} from "./hooks/login.hook";
 import {BrowserRouter} from "react-router-dom";
 import {Routes} from './routes';
+import {useHttp} from "./hooks/http.hook";
 
 const App: React.FC = () => {
     const {login, logout, token, userId, ready} = useLogin();

@@ -17,11 +17,12 @@ export const useHttp = () => {
                 method,
                 body,
                 headers
-            }).then(response => {
+            }).then(async (response) => {
+                const last =  await response.json();
                 if(!response.ok) {
-                    throw new Error('Something wrong');
+                    throw new Error(last.message);
                 }
-                return response.json()
+                return last;
             });
 
             setLoading(false);
