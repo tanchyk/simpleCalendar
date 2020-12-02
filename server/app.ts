@@ -2,9 +2,11 @@ import express, {Errback, Request, Response, NextFunction} from 'express';
 import config from 'config';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+const mongoose = require('mongoose');
 
 import authRouter from './routes/auth.routes';
-import todoRouter from './routes/todo.routes';
+import {CallbackError} from "mongoose";
+import eventRouter from "./routes/event.routes";
 
 const errorHandler = (err: Errback, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
@@ -21,10 +23,24 @@ app.use(errorHandler);
 
 //Routes
 app.use('/api/auth', authRouter);
-app.use('/api/todo', todoRouter);
+app.use('/api/event', eventRouter);
 
 const PORT = config.get('port') || 5000;
 
-app.listen(PORT, () => {
-    console.log(`PORT ${PORT}`)
-});
+const startServer = async () => {
+    try {
+        await mongoose.connect(config.get('mongoUri'), {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true
+        });
+        app.listen(PORT, () => {
+            console.log(`Started ${PORT}`);
+        });
+    } catch (err) {
+        console.log('Server Error', err.message);
+        process.exit(1);
+    }
+}
+
+startServer();

@@ -1,5 +1,6 @@
 {
   "port": 5000,
-  "jwtSecret": "bohdanTS",
-  "baseUrl": "http://localhost:5000"
+  "jwtSecret": "bohdanTSCalendar",
+  "baseUrl": "http://localhost:5000",
+  "mongoUri": "mongodb+srv://newUser:bogdanCalendar@cluster0.auh6g.mongodb.net/TsCalendar?retryWrites=true&w=majority"
 }

@@ -1,6 +1,5 @@
 import express, {NextFunction, Request, Response} from 'express';
-import {QueryResult} from "pg";
-import {pool} from '../db';
+const User = require('../models/User');
 import {check, validationResult} from 'express-validator';
 
 import config from 'config';
@@ -29,7 +28,9 @@ authRouter.post('/register',
 
         const hashedPassword: string = await bcrypt.hash(password, 4);
 
-        await pool.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, hashedPassword]);
+        const user = new User({email, password: hashedPassword});
+
+        await user.save();
 
         return res.status(201).json({email, password});
     } catch (e) {
@@ -55,31 +56,28 @@ authRouter.post('/login',
 
             const {email, password} = req.body;
 
-            const user: QueryResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+            const user = await User.findOne({email});
 
-            if(!user.rows[0].email) {
+            if(!user) {
                 return res.status(400).json({message: 'No such user'});
             }
 
-            const check = await bcrypt.compare(password, user.rows[0].password);
+            const check = await bcrypt.compare(password, user.password);
 
             if(!check) {
                 return res.status(400).json({message: 'Wrong password'});
             }
 
             const token = jwt.sign(
-                {userId: user.rows[0].user_id},
+                {userId: user._id},
                 config.get('jwtSecret'),
                 {expiresIn: '1h'}
             )
 
             return res.status(200).json({
                 token,
-                userId: user.rows[0].user_id
+                userId: user._id
             });
-
-            return res.status(400);
-
         } catch (e) {
             return res.status(500).json({message: 'Try again'})
         }
